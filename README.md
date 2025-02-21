@@ -31,15 +31,3 @@ El proyecto se organiza en las siguientes clases:
 - **Payment**: Simula el proceso de pago de una orden.
 - **Restaurant**: Utiliza una cola FIFO para gestionar y procesar múltiples órdenes.
 
-## Requisitos
-
-- Python 3.6 o superior.
-- No se requieren librerías externas, ya que se utilizan módulos estándar como `json`, `collections` y `namedtuple`.
-
-## Cómo Ejecutar el Proyecto
-
-1. **Clonar el repositorio**:
-
-   ```bash
-   git clone https://github.com/tu_usuario/tu_repositorio.git
-   cd tu_repositorio
