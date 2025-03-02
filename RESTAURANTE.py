@@ -1,187 +1,167 @@
 import json
-from collections import deque, namedtuple
-
-
-MenuSet = namedtuple("MenuSet", ["category", "items"])
+from collections import deque
 
 class MenuItem:
     def __init__(self, name, price):
-        self._name = name
-        self._price = price
+        self.__name = name
+        self.__price = price
 
-    @property
-    def name(self):
-        return self._name
+    def get_name(self):
+        return self.__name
 
-    @name.setter
-    def name(self, value):
-        self._name = value
+    def set_name(self, name):
+        self.__name = name
 
-    @property
-    def price(self):
-        return self._price
+    def get_price(self):
+        return self.__price
 
-    @price.setter
-    def price(self, value):
-        self._price = value
+    def set_price(self, price):
+        self.__price = price
 
 class Beverage(MenuItem):
     def __init__(self, name, price, size, is_cold, has_ice):
         super().__init__(name, price)
-        self._size = size
-        self._is_cold = is_cold
-        self._has_ice = has_ice
+        self.__size = size
+        self.__is_cold = is_cold
+        self.__has_ice = has_ice
 
-    @property
-    def size(self):
-        return self._size
+    def get_size(self):
+        return self.__size
 
-    @size.setter
-    def size(self, value):
-        self._size = value
+    def set_size(self, size):
+        self.__size = size
 
-    @property
-    def is_cold(self):
-        return self._is_cold
+    def get_is_cold(self):
+        return self.__is_cold
 
-    @is_cold.setter
-    def is_cold(self, value):
-        self._is_cold = value
+    def set_is_cold(self, is_cold):
+        self.__is_cold = is_cold
 
-    @property
-    def has_ice(self):
-        return self._has_ice
+    def get_has_ice(self):
+        return self.__has_ice
 
-    @has_ice.setter
-    def has_ice(self, value):
-        self._has_ice = value
+    def set_has_ice(self, has_ice):
+        self.__has_ice = has_ice
 
     def __str__(self):
-        return (
-            f"{self.name} (Price: {self.price}, Size: {self.size}, "
-            f"Cold: {self.is_cold}, Ice: {self.has_ice})"
+        return "{} (Price: {}, Size: {}, Cold: {}, Ice: {})".format(
+            self.get_name(), self.get_price(), self.__size, self.__is_cold, self.__has_ice
         )
 
 class Appetizer(MenuItem):
     def __init__(self, name, price, appetizer_type):
         super().__init__(name, price)
-        self._appetizer_type = appetizer_type
+        self.__appetizer_type = appetizer_type
 
-    @property
-    def appetizer_type(self):
-        return self._appetizer_type
+    def get_appetizer_type(self):
+        return self.__appetizer_type
 
-    @appetizer_type.setter
-    def appetizer_type(self, value):
-        self._appetizer_type = value
+    def set_appetizer_type(self, appetizer_type):
+        self.__appetizer_type = appetizer_type
 
     def __str__(self):
-        return f"{self.name} (Price: {self.price}, Type: {self.appetizer_type})"
+        return "{} (Price: {}, Type: {})".format(
+            self.get_name(), self.get_price(), self.__appetizer_type
+        )
 
 class MainCourse(MenuItem):
     def __init__(self, name, price, ingredients, salad):
         super().__init__(name, price)
-        self._ingredients = ingredients
-        self._salad = salad
+        self.__ingredients = ingredients
+        self.__salad = salad
 
-    @property
-    def ingredients(self):
-        return self._ingredients
+    def get_ingredients(self):
+        return self.__ingredients
 
-    @ingredients.setter
-    def ingredients(self, value):
-        self._ingredients = value
+    def set_ingredients(self, ingredients):
+        self.__ingredients = ingredients
 
-    @property
-    def salad(self):
-        return self._salad
+    def get_salad(self):
+        return self.__salad
 
-    @salad.setter
-    def salad(self, value):
-        self._salad = value
+    def set_salad(self, salad):
+        self.__salad = salad
 
     def __str__(self):
-        return (
-            f"{self.name} (Price: {self.price}, Ingredients: {self.ingredients}, "
-            f"Salad: {self.salad})"
+        return "{} (Price: {}, Ingredients: {}, Salad: {})".format(
+            self.get_name(), self.get_price(), self.__ingredients, self.__salad
         )
 
 class Order:
     def __init__(self):
-        self.plates = []
-        self.menu = {}  
+        self.__plates = []       # Lista de platos
+        self.__menu = {}         # Menú representado como diccionario
 
     def add_plate(self, plate):
-        self.plates.append(plate)
+        self.__plates.append(plate)
 
     def remove_plate(self, plate):
-        self.plates.remove(plate)
-
-    def total(self):
-        return self.calculate_total_price()
+        try:
+            self.__plates.remove(plate)
+        except ValueError as e:
+            print("Error al eliminar el plato:", e)
 
     def calculate_total_price(self):
-        total = sum(plate.price for plate in self.plates)
-        has_main_course = any(isinstance(plate, MainCourse) for plate in self.plates)
+        total = sum(plate.get_price() for plate in self.__plates)
+        has_main_course = any(isinstance(plate, MainCourse) for plate in self.__plates)
         if has_main_course:
-            discount = sum(
-                plate.price * 0.1 for plate in self.plates if isinstance(plate, Beverage)
-            )
+            discount = sum(plate.get_price() * 0.1 for plate in self.__plates if isinstance(plate, Beverage))
             total -= discount
         return total
 
     def get_plate_details(self):
-        return [str(plate) for plate in self.plates]
+        return [str(plate) for plate in self.__plates]
 
     def __str__(self):
-        plate_details = "\n".join(self.get_plate_details())
-        return f"Order:\n{plate_details}\nTotal: {self.total()}"
-
+        details = "\n".join(self.get_plate_details())
+        return "Order:\n" + details + "\nTotal: " + str(self.calculate_total_price())
 
     def load_menu(self, filename="menu.json"):
         try:
             with open(filename, "r", encoding="utf-8") as f:
-                self.menu = json.load(f)
+                self.__menu = json.load(f)
             print("Menú cargado exitosamente.")
         except FileNotFoundError:
             print("Archivo de menú no encontrado. Se creará uno nuevo.")
-            self.menu = {}
+            self.__menu = {}
+        except json.JSONDecodeError:
+            print("Error al decodificar el archivo de menú.")
+            self.__menu = {}
 
     def save_menu(self, filename="menu.json"):
-        with open(filename, "w", encoding="utf-8") as f:
-            json.dump(self.menu, f, indent=4, ensure_ascii=False)
-        print("Menú guardado exitosamente.")
+        try:
+            with open(filename, "w", encoding="utf-8") as f:
+                json.dump(self.__menu, f, indent=4, ensure_ascii=False)
+            print("Menú guardado exitosamente.")
+        except Exception as e:
+            print("Error al guardar el menú:", e)
 
     def create_menu(self, categories=None):
-      
         if categories is None:
             categories = ["Beverages", "Appetizers", "MainCourses"]
-        self.menu = {category: [] for category in categories}
+        self.__menu = {category: [] for category in categories}
         self.save_menu()
 
     def add_menu_item(self, category, item_dict):
-      
-        if category not in self.menu:
-            self.menu[category] = []
-        self.menu[category].append(item_dict)
+        if category not in self.__menu:
+            self.__menu[category] = []
+        self.__menu[category].append(item_dict)
         self.save_menu()
 
     def update_menu_item(self, category, item_name, updated_item):
-       
-        if category in self.menu:
-            for idx, item in enumerate(self.menu[category]):
+        if category in self.__menu:
+            for idx, item in enumerate(self.__menu[category]):
                 if item.get("name") == item_name:
-                    self.menu[category][idx] = updated_item
+                    self.__menu[category][idx] = updated_item
                     self.save_menu()
                     return True
         return False
 
     def delete_menu_item(self, category, item_name):
-        
-        if category in self.menu:
-            for idx, item in enumerate(self.menu[category]):
+        if category in self.__menu:
+            for idx, item in enumerate(self.__menu[category]):
                 if item.get("name") == item_name:
-                    del self.menu[category][idx]
+                    del self.__menu[category][idx]
                     self.save_menu()
                     return True
         return False
@@ -192,22 +172,20 @@ class Payment:
         self.payment_method = payment_method
 
     def process_payment(self):
-        print(
-            f"Processing payment of {self.order.total()} using {self.payment_method}..."
-        )
+        print("Processing payment of {} using {}...".format(self.order.calculate_total_price(), self.payment_method))
         print("Payment successful!")
 
 class Restaurant:
     def __init__(self):
-        self.orders = deque()  
+        self.__orders = deque()  # Cola (queue) de órdenes
 
     def add_order(self, order):
-        self.orders.append(order)
+        self.__orders.append(order)
         print("Orden agregada a la cola.")
 
     def process_next_order(self):
-        if self.orders:
-            order = self.orders.popleft()
+        if self.__orders:
+            order = self.__orders.popleft()
             print("Procesando la siguiente orden:")
             print(order)
         else:
@@ -219,7 +197,7 @@ class Restaurant:
 order = Order()
 order.create_menu(["Beverages", "Appetizers", "MainCourses"])
 
-# Agregar items al menú usando diccionarios
+# Agregar ítems al menú usando diccionarios
 order.add_menu_item("Beverages", {
     "name": "Coca Cola", "price": 2000, "size": "Large", "is_cold": True, "has_ice": True
 })
@@ -227,19 +205,18 @@ order.add_menu_item("MainCourses", {
     "name": "Spaghetti", "price": 25000, "ingredients": "Pasta and tomato sauce", "salad": False
 })
 
-# Actualizar un item del menú
+# Actualizar un ítem del menú
 order.update_menu_item("Beverages", "Coca Cola", {
     "name": "Coca Cola", "price": 1800, "size": "Medium", "is_cold": True, "has_ice": True
 })
 
-# Eliminar un item del menú
+# Eliminar un ítem del menú
 order.delete_menu_item("MainCourses", "Spaghetti")
 
 # Cargar menú para verificar cambios
 order.load_menu()
 
 # --- Gestión de órdenes y procesamiento de pagos ---
-# Crear una orden y agregar platos
 order.add_plate(MainCourse("Spaghetti", 25000, "Pasta and tomato sauce", False))
 order.add_plate(Beverage("Coca Cola", 2000, "Large", True, True))
 
@@ -251,5 +228,4 @@ payment.process_payment()
 # --- Gestión de múltiples órdenes en el restaurante ---
 restaurant = Restaurant()
 restaurant.add_order(order)
-# Aquí se pueden agregar más órdenes y procesarlas en orden FIFO
 restaurant.process_next_order()
